@@ -1,0 +1,7 @@
+test: 
+  interval: 10_000
+  user: 4
+  count: 10
+
+server:
+  port: 8081
