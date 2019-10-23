@@ -1,1 +1,4 @@
 rootProject.name = 'jvm-receiver'
+
+include 'jvm-receiver-server'
+include 'assembly'

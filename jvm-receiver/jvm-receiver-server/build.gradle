@@ -1,0 +1,11 @@
+
+dependencies {
+  ext {
+    springBootVersion = '2.2.0.RELEASE'
+  }
+
+	implementation 'org.springframework.boot:spring-boot-starter-web:2.2.0.RELEASE'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}

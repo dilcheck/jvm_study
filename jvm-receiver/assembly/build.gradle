@@ -1,0 +1,18 @@
+apply plugin: 'distribution'
+uploadArchives.enabled = false
+
+dependencies {
+  compile project(':jvm-receiver-server')
+}
+
+distributions {
+  main {
+    baseName = 'jvm-receiver-server'
+    contents {
+      from { 'src/assembly' }
+      into('lib') {
+        from configurations.runtime
+      }
+    }
+  }
+}
