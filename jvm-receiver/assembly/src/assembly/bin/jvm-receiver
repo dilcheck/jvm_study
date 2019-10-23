@@ -24,28 +24,61 @@ export jvm_receiver_LIB=${jvm_receiver_LIB:-$PROJECT_HOME/lib}
 HEAP_SIZE=3g
 MAIN_CLASS='study.exec.JvmReceiverApplication'
 
+# pallete ####################
+function fail() {
+  MESSAGE="$1"
+  echo -e "\\033[01;31m$MESSAGE\\033[00m"
+}
+
 # function ####################
 function help() {
 cat <<EOF
 options
     -g  garbage collection type
+          g, g1
+          s, serial
+          c. cms
+          p, parallel
+        
     -h  heap size
 EOF
 }
 
+function find-garbage-collector() {
+  case $GARBAGE_COLLECTOR_TYPE in 
+    g | g1)
+      JAVA_OPTS="$JAVA_OPTS -XX:+UseG1GC"
+      ;;
+    s | serial)
+      JAVA_OPTS="$JAVA_OPTS -XX:+UseSerialGC"
+      ;;
+    c | cms)
+      JAVA_OPTS="$JAVA_OPTS -XX:+UseParNewGC"
+      ;;
+    p | parallel)
+      JAVA_OPTS="$JAVA_OPTS -XX:+UseParallelGC"
+      ;;
+    *)
+      fail "wrong collector type"
+      help
+      exit 0
+  esac
+}
+
 function execute() {
-    JAVA_OPTS="-Xms$HEAP_SIZE -Xmx$HEAP_SIZE"
+  JAVA_OPTS="-Xms$HEAP_SIZE -Xmx$HEAP_SIZE"
+  find-garbage-collector
 
-    JAVA_JAR=$(find "$jvm_receiver_LIB" -name '*.jar' | tr '\n' ':')
-
-    java $JAVA_OPTS -cp "$JAVA_JAR" "$MAIN_CLASS"
+  JAVA_JAR=$(find "$jvm_receiver_LIB" -name '*.jar' | tr '\n' ':')
+  
+  java $JAVA_OPTS -cp "$JAVA_JAR" "$MAIN_CLASS"
 }
 
 # options ####################
 while getopts "g:c:" opt; do
     case $opt in
         "g")
-            GARBAGE_COLLECTOR=$OPTARG
+            GARBAGE_COLLECTOR_TYPE=$OPTARG
             ;;
         "h")
             HEAP_SIZE=$OPTARG
@@ -58,7 +91,7 @@ while getopts "g:c:" opt; do
 done
 
 # main ####################
-if [ -z $GARBAGE_COLLECTOR ]
+if [ -z $GARBAGE_COLLECTOR_TYPE ]
     then 
         help
     else
