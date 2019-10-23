@@ -1,0 +1,66 @@
+#!/bin/bash
+# resolve links - $0 may be a softlink
+if [ -z "$PROJECT_HOME" ];then
+  PRG="$0"
+  while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+      PRG="$link"
+    else
+      PRG=`dirname "$PRG"`/"$link"
+    fi
+  done
+  
+  cd "$(dirname $PRG)/.." || exit 1
+  export PROJECT_HOME=`pwd`
+  cd -&>/dev/null
+fi
+
+export jvm_receiver_BIN=${jvm_receiver_BIN:-$PROJECT_HOME/bin}
+export jvm_receiver_LIB=${jvm_receiver_LIB:-$PROJECT_HOME/lib}
+
+# default ####################
+HEAP_SIZE=3g
+MAIN_CLASS='study.exec.JvmReceiverApplication'
+
+# function ####################
+function help() {
+cat <<EOF
+options
+    -g  garbage collection type
+    -h  heap size
+EOF
+}
+
+function execute() {
+    JAVA_OPTS="-Xms$HEAP_SIZE -Xmx$HEAP_SIZE"
+
+    JAVA_JAR=$(find "$jvm_receiver_LIB" -name '*.jar' | tr '\n' ':')
+
+    java $JAVA_OPTS -cp "$JAVA_JAR" "$MAIN_CLASS"
+}
+
+# options ####################
+while getopts "g:c:" opt; do
+    case $opt in
+        "g")
+            GARBAGE_COLLECTOR=$OPTARG
+            ;;
+        "h")
+            HEAP_SIZE=$OPTARG
+            ;;
+        *)
+           	help
+            exit 0
+            ;;
+    esac
+done
+
+# main ####################
+if [ -z $GARBAGE_COLLECTOR ]
+    then 
+        help
+    else
+        execute
+fi
