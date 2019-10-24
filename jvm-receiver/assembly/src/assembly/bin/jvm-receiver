@@ -19,6 +19,7 @@ fi
 
 export jvm_receiver_BIN=${jvm_receiver_BIN:-$PROJECT_HOME/bin}
 export jvm_receiver_LIB=${jvm_receiver_LIB:-$PROJECT_HOME/lib}
+export jvm_receiver_LOG=${jvm_receiver_LOG:-$PROJECT_HOME/log}
 
 # default ####################
 HEAP_SIZE=3g
@@ -66,7 +67,7 @@ function find-garbage-collector() {
 }
 
 function execute() {
-  JAVA_OPTS="-server -Xms$HEAP_SIZE -Xmx$HEAP_SIZE"
+  JAVA_OPTS="-server -Xms$HEAP_SIZE -Xmx$HEAP_SIZE -Xloggc:$jvm_receiver_LOG/gclog"
   find-garbage-collector
 
   JAVA_JAR=$(find "$jvm_receiver_LIB" -name '*.jar' | tr '\n' ':')
