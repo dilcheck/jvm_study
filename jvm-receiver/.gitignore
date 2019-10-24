@@ -1,4 +1,5 @@
 .*
+bin
 */bin
 HELP.md
 .gradle

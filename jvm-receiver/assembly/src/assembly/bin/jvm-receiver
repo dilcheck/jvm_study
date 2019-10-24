@@ -66,7 +66,7 @@ function find-garbage-collector() {
 }
 
 function execute() {
-  JAVA_OPTS="-Xms$HEAP_SIZE -Xmx$HEAP_SIZE"
+  JAVA_OPTS="-server -Xms$HEAP_SIZE -Xmx$HEAP_SIZE"
   find-garbage-collector
 
   JAVA_JAR=$(find "$jvm_receiver_LIB" -name '*.jar' | tr '\n' ':')
