@@ -76,7 +76,7 @@ function execute() {
 }
 
 # options ####################
-while getopts "g:c:" opt; do
+while getopts "g:h:" opt; do
     case $opt in
         "g")
             GARBAGE_COLLECTOR_TYPE=$OPTARG
